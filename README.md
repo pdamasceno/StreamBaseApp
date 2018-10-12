@@ -1,6 +1,6 @@
 # StreamBaseApp
 
-It is a simple named pipe Client/Server application with the theme of a video game collection management. You can create, search for individual games and the whole collection, update total time played and delete a game from the collection.
+It is a simple named pipe Client/Server application with the theme of a video game collection management. You can create, search for individual games and the whole collection, update total time played and delete a game from the collection. To use, start the Server first and then the Client.
 
 ### 1. Communication Protocol
 
