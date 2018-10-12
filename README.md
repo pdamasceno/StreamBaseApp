@@ -1,6 +1,6 @@
 # StreamBaseApp
 
-It is a simple named pipe Client/Server application with the theme of a video game collection management. You can create, search for individual games and the whole collection, update total time played and delete a game from the collection. To use, start the Server first and then the Client.
+It is a simple named pipe Client/Server application with the theme of a video game collection management. You can create, search for individual games or the whole collection, update total time played and delete a game from the collection. To use, start the Server first and then the Client.
 
 ### 1. Communication Protocol
 
@@ -28,22 +28,22 @@ Every message has its own header and source files. Each message derives from a b
 |:----------:|:------------------------------------------------------------:|
 | Content    | Stores the content of messages sent by the Client and Server |
 
-Every other text sent by the Client that it is not a pre-determined command will sent in the Content attribute of this message. Also every return message of a command is sent using this message by the Server.
+Every other text sent by the Client that it is not a pre-determined command will be sent in the Content attribute of this message. Also every return message of a command is sent using this message by the Server.
 
 **Message Type 101: Command**
 
 | Attributes        | Description                                                  |
 |:------------------|:-------------------------------------------------------------|
-| Command Type      | Informs the type of command. (1=Create Game, 2=Get Game, 3=Get Game Collection, 4=Delete Game, 5=Update Total Time Played, 6=Invalid Command |
+| Command Type      | Informs the type of command. (1=Create Game, 2=Get Game, 3=Get Game Collection, 4=Delete Game, 5=Update Total Time Played, 6=Invalid Command) |
 | Game Genre        | Genre of the game to be created (Shooter, RPG and Racing available) |
 | Game Name         | Name of the game to be created                               |
-| Total Time Played | Player total time played                                     |
+| Total Time Played | Game total time it was played                                |
 
-The usage of the attributes will depend on wich command type is being used. For Create Game, Game Genre and Game Name. For Get Game and Delete Game only Game Name. For Update Total Time Played, Game Name and Total Time Played. For Get Game Collection, no attribute is used. The return message is a Common Message with the status of the command in the Content attribute.
+The usage of the attributes will depend on wich command type is being used. For Create Game, Game Genre and Game Name. For Get Game and Delete Game only Game Name. For Update Total Time Played, Game Name and Total Time Played. For Get Game Collection, no attribute is used. The return message is a Common Message with the status message of the command in the Content attribute.
 
 ### 1.2. Writer
 
-Writer is class that have the responsibility of serializing messages sent by the Client and by the Server, obeying the rules of the protocol. The function WriteAll is the one that does this and it receives a pointer to the base class of the messages that is the Header class and based on the message type that Header holds, it downcasts the pointer to the respective derived class to access its attributes and generate the serialized message.
+Writer is class that have the responsibility of serializing messages sent by the Client and by the Server, obeying the rules of the protocol. The function WriteAll is the one that does this and it receives a pointer to the base class of the messages that is the Header class and based on the message type information that Header holds, it downcasts the pointer to the respective derived class to access its attributes and generate the serialized message.
 
 ### 1.3. Reader
 
@@ -51,7 +51,7 @@ Reader is a class responsible for deserializing the messages sent by the Client 
 
 ### 2. Client
 
-The Client connects to the server via a named pipe and only make sync calls. The Client can write to the pipe and read from it. The Client also handles input typed in the terminal. Every normal message is sent via a Common Message and every game collection and game manipulation is sent via a Command.
+The Client connects to the server via a named pipe and only make sync calls. The Client can write to the pipe and read from it. The Client also handles input typed in the terminal. Every normal message is sent via a Common Message and every game collection or game manipulation is sent via a Command.
 The commands used by the client are below:
 
 **create** - create game based on genre\
@@ -68,12 +68,12 @@ The Server creates a named pipe and waits for a connection by the client and can
 
 ### 3.1. Game Generator
 
-It is a simple factory of classes and is used to create games to be added to the collection. The base class used in the factory is called GameGenre and all genres available in this application are derived from it. For now there is only Shooter, RPG and Racing genres available but it is easy to add new ones if needed but the whole project would need to be recompiled. The static function CreateGame receives a base class GameGenre and the name of the game to be created. Then based on the type of the genre it returns a pointer to an instatiated derived genre.
+It is a simple factory of classes and is used to create games that later will be added to the collection. The base class used in the factory is called GameGenre and all genres available in this application are derived from it. For now there is only Shooter, RPG and Racing genres available but it is easy to add new ones if needed but the Server would need to be recompiled. The static function CreateGame receives a base class GameGenre and the name of the game to be created. Then based on the type of the genre it returns a pointer to an instatiated derived genre.
 
 ### 3.2. How Server works
 
-After reading a message from the client from the pipe, the Server uses the function HandleCommunication to treat the received message. It is in this function that the deserialization of messages is done based on the message type that arrived. First, the Server appends the date and hour that the message arrived using a stringstream and store it in a queue. When the application is closed it is created a log file with the information of this queue, with every entry in the file being like this: **YYY-MM-DD_HH:MM:SS-100;Test message**. Then it makes a call to ReadAll to get that pointer to base Header and then base on the message type information it downcasts the pointer to the respective derived class to be able to access its attributes and do what it is necessary with them.\
-Every game created is stored in an unordered_map container with the key being the name of the game and the value the actual game object. I chose unordered_map because of its fast lookups and ease to manipulate using only the name of the game. For example, if I want to find a game called 'Diablo' I don't need to iterate over the whole container to find it. All commands do a kind of operation on the container or the game object. Below is what which command do:
+After reading a message from the client from the pipe, the Server uses the function HandleCommunication to treat the received message. It is in this function that the deserialization of messages is done based on the message type that arrived. First, the Server appends the date and hour that the serialized message using a stringstream and store it in a queue. When the application is closed it is created a log file with the information of this queue, with every entry in the file being like this: **YYY-MM-DD_HH:MM:SS-100;Test message**. Then it makes a call to ReadAll to get that pointer to base Header and based on the message type information, it downcasts the pointer to the respective derived class to be able to access its attributes and do what it is necessary with them.\
+Every game created is stored in an unordered_map container with the key being the name of the game and the value the actual game object. I chose unordered_map because of its fast lookups and ease to manipulate using only the name of the game. For example, if I want to find a game called 'Diablo' I don't need to iterate over the whole container to find it. All commands do a type of operation on the container or the game object. Below is what which command do:
 
 | Command Type             | Description (container = unordered_map)                                           |
 |:-------------------------|:----------------------------------------------------------------------------------|
@@ -87,7 +87,7 @@ The result of each operation is returned using a Common Message to the client.
 
 ### 4. Conclusion and Assumptions
 
-It was a fun project to do. I tried to respect the total time of 8 hours expected to do this but ended up passing it by something between 4 to 6 hours if I'm correct. I'm not trying to make any excuses here but all of this is because my background developing with C++ is all in Linux. I never programmed in Windows before or used cmake to build projects and I struggled a little bit to get things right with cmake. My CMakeLists file is not great but gets the work done. Another reason for the delay is my inexperience with named pipes, getting the sync calls between server and client took some time but it was ok to figure it out but I was having a lot of difficulty to get it running. I was able the create the pipe right but was having trouble with the async read and write. I know that for async calls maybe it is better to use threads but as I said it was taking too much time and I didn't want to extrapolate that 8 hours by more than I already did. Anyway, I know I can get my head around it with more time. Now for the assumptions I did for each feature:
+It was a fun project to do. I tried to respect the total time of 8 hours expected to do this but ended up passing it by something between 4 to 6 hours if I'm correct. I'm not trying to make any excuses here but all of this is because my background developing with C++ is all in Linux. I never programmed in Windows before or used cmake to build projects and I struggled a little bit to get things right with cmake. My CMakeLists file is not great but gets the work done. Another reason for the delay is my inexperience with named pipes, getting the sync calls between server and client took some time but it was ok to figure it out but I was having a difficult time to get the async calls. I was able the create the pipe right but was having trouble with the async read and write. I know that for async calls maybe it is better to use threads but as I said it was taking too much time and I didn't want to extrapolate that 8 hours by more than I already did. Anyway, I know I can get my head around it with more time. Now for the assumptions I did for each feature:
 
 - **The client should be able to connect to the server through a NamedPipe**\
 Used Named Pipes API to create the pipe and the read and write to pipe works as expected in the Server and in the Client.
