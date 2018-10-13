@@ -95,15 +95,15 @@ Used Named Pipes API to create the pipe and the read and write to pipe works as 
 I was only able to make the sync calls as explained above. No async calls, sorry.
 - **The client should be able to send trivial data (strings, numbers) to the server**\
 The Client can send any information using a Common Message, the information is then printed to the Server terminal.
-- **The client should be able to create objects on the server (based on req-7 below), retrieve them, their attributes and call methods on them**
+- **The client should be able to create objects on the server (based on req-7 below), retrieve them, their attributes and call methods on them**\
 All this is done by the Client via the Command message. 
 - **The server should be able to receive both sync/async connection requests from clients**\
 Same as above, only sync calls and no async calls. Sorry again.
 - **The server should be able to store data provided by the client via NamedPipe in a reasonable data structure**\
 All messages sent by the Client are stored in a queue and later this queue is used to generate a log file.
-- **The server should be able to register a custom class (w/ related functions, attributes) which can be used by the client (see req-4)**
+- **The server should be able to register a custom class (w/ related functions, attributes) which can be used by the client (see req-4)**\
 I did this by using the class factory Game Generator.
-- **The server should be able to store the custom objects created by the client for the custom class created in req-7**
+- **The server should be able to store the custom objects created by the client for the custom class created in req-7**\
 The game objects are stored in a unordere_map container called gameCollection.
 
 That's all folks. Hope that what I done with this little application is enough to let me work with you all.
