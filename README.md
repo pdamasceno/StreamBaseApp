@@ -47,7 +47,7 @@ Writer is class that have the responsibility of serializing messages sent by the
 
 ### 1.3. Reader
 
-Reader is a class responsible for deserializing the messages sent by the Client and by the Server. The function ReadAll is the one that does this and it receivers a serialized message, split the message based on the semicolon separator and store each splited value into a vector to access each attribute individually. After that it checks the first position of the vector that stores the message type and based on that information it instantiates a Common Message or Command and fill them accordingly. In the end a pointer to the messages is returned.
+Reader is a class responsible for deserializing the messages sent by the Client and by the Server. The function ReadAll is the one that does this and it receivers a serialized message, splits the message based on the semicolon separator and store each splited value into a vector to access each attribute individually. After that it checks the first position of the vector that stores the message type and based on that information it instantiates a Common Message or Command and fill them accordingly. In the end a pointer to the messages is returned.
 
 ### 2. Client
 
@@ -68,7 +68,7 @@ The Server creates a named pipe and waits for a connection by the client and can
 
 ### 3.1. Game Generator
 
-It is a simple factory of classes and is used to create games that later will be added to the collection. The base class used in the factory is called GameGenre and all genres available in this application are derived from it. For now there is only Shooter, RPG and Racing genres available but it is easy to add new ones if needed but the Server would need to be recompiled. The static function CreateGame receives a base class GameGenre and the name of the game to be created. Then based on the type of the genre it returns a pointer to an instatiated derived genre.
+It is a simple factory of classes and is used to create games that later will be added to the collection. The base class used in the factory is called GameGenre and all genres available in this application are derived from it. For now there are only Shooter, RPG and Racing genres available but it is easy to add new ones if needed but the whole application would need to be recompiled. The static function CreateGame receives a base class GameGenre and the name of the game to be created. Then based on the type of the genre it returns a pointer to an instatiated derived genre.
 
 ### 3.2. How Server works
 
@@ -104,6 +104,6 @@ All messages sent by the Client are stored in a queue and later this queue is us
 - **The server should be able to register a custom class (w/ related functions, attributes) which can be used by the client (see req-4)**\
 I did this by using the class factory Game Generator.
 - **The server should be able to store the custom objects created by the client for the custom class created in req-7**\
-The game objects are stored in a unordere_map container called gameCollection.
+The game objects are stored in a unordered_map container called gameCollection.
 
-That's all folks. Hope that what I done with this little application is enough to let me work with you all.
+That's all folks. I hope that what I done with this little application is enough to let me work with you all.
